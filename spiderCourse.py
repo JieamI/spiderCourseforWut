@@ -36,5 +36,4 @@ class SpiderCourse():
                         self.res[index].append(temp_red.get_text().strip().replace('\t','').replace('\r', '').replace('\n', ''))
                 else:
                     self.res[index].append("")
-            index = index+1       
-
+            index = index+1

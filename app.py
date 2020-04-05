@@ -22,8 +22,34 @@ class User(db.Model):
     pwd = db.Column(db.String(30))
     event = db.Column(db.Text)
    
+#ID验证并注册
+@app.route('/login', methods=['POST'])
+@cross_origin()
+def user_login():
+    data = json.loads(request.get_data(as_text = True))
+    if 'usr' in data and 'pwd' in data and data['usr'] and data['pwd']:
+        user = User.query.filter_by(usr = data['usr']).first()
+        print(data['usr'])
+        print(data['pwd'])
+        if user:
+            print('ok')
+            try:
+                SpiderCourse(data['usr'], data['pwd']).SoupParse()
+                return jsonify({'status': 1})
+            except:
+                return jsonify({'status': 0})
+        else:
+            try:
+                SpiderCourse(data['usr'], data['pwd']).SoupParse()
+                db.session.add(User(usr = data['usr'], pwd = data['pwd']))
+                db.session.commit()
+                return jsonify({'status': 1})
+            except:
+                return jsonify({'status': 0})
+    return jsonify({'status': 0})
+
 # 课表获取API
-@app.route('/course', methods=['post'])
+@app.route('/course', methods=['POST'])
 @cross_origin()
 def get_tasks():
     data = json.loads(request.get_data(as_text=True))
@@ -91,3 +117,10 @@ def handleSwitch():
             return jsonify({'status': 1})
         return jsonify({'status': 0})
     return jsonify({'status': 0})
+
+#逃生舱
+@app.route('/outlast', methods=['GET'])
+@cross_origin()
+def outlast():
+    msg = 'HELLOWORLD'
+    return jsonify({'msg': msg})
